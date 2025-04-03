@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Camera Test Prototype</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- AlpineJS CDN -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans p-6">
+
+    <div
+        x-data="cameraComponent()"
+        class="max-w-md mx-auto bg-white p-6 rounded shadow space-y-4"
+    >
+        <h1 class="text-xl font-bold text-center">Camera Test</h1>
+
+        <!-- Hidden camera input -->
+        <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            x-ref="fileInput"
+            @change="handleFileChange"
+            class="hidden"
+        />
+
+        <!-- Trigger -->
+        <button
+            @click="$refs.fileInput.click()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
+        >
+            Take Picture
+        </button>
+
+        <!-- Preview -->
+        <template x-if="previewUrl">
+            <div class="space-y-4">
+                <img
+                    :src="previewUrl"
+                    alt="Preview"
+                    class="w-full rounded border"
+                />
+
+                <div class="flex justify-between space-x-4">
+                    <button
+                        @click="reset"
+                        class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+                    >
+                        Retake
+                    </button>
+
+                    <button
+                        @click="alert('This would save the image in production.')"
+                        class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                    >
+                        Save (fake)
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <script>
+        function cameraComponent() {
+            return {
+                file: null,
+                previewUrl: null,
+
+                handleFileChange(event) {
+                    this.file = event.target.files[0];
+
+                    if (this.file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.previewUrl = e.target.result;
+                        };
+                        reader.readAsDataURL(this.file);
+                    }
+                },
+
+                reset() {
+                    this.file = null;
+                    this.previewUrl = null;
+                    this.$refs.fileInput.value = '';
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
